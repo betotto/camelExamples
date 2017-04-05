@@ -7,7 +7,6 @@ package mx.com.betotto.graphics.histogramReport;
 
 import javax.ws.rs.core.MediaType;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.ContextName;
 
 /**
  *
@@ -20,8 +19,9 @@ public class Route extends RouteBuilder{
         rest()
             .post("histogramReport")
                 .produces(MediaType.APPLICATION_JSON)
-                .to("sql:select REQUEST_TIME from BI_AUDIT_API?dataSource=briefingiqDataSource")
                 .route()
+                .to("sql:select REQUEST_TIME from BI_AUDIT_API?dataSource=briefingiqDataSource")
+                .log("${body}")
                 .transform().body();
     }
 }
