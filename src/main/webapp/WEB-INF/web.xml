@@ -13,6 +13,6 @@
     <!-- Camel servlet mapping -->
     <servlet-mapping>
         <servlet-name>CamelServlet</servlet-name>
-        <url-pattern>/camel/*</url-pattern>
+        <url-pattern>/reports/*</url-pattern>
     </servlet-mapping>
 </web-app>
