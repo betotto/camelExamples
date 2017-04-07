@@ -5,6 +5,7 @@
  */
 package mx.com.betotto.graphics.histogramReport;
 
+import com.mongodb.MongoClient;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -19,7 +20,7 @@ public class DataSourceFactory {
     
     @Produces
     @Named("briefingiqDataSource")
-    DataSource createTransactionManager() {
+    DataSource getJndiDatasourceWeblogic() {
         DataSource briefingiqDataSource = null;
         try {
             javax.naming.Context context = new javax.naming.InitialContext();
@@ -28,5 +29,11 @@ public class DataSourceFactory {
             System.out.println("perro");
         }
         return briefingiqDataSource;
+    }
+    
+    @Produces
+    @Named("mongoClient")
+    MongoClient getMongoClient() {
+        return new MongoClient("localhost", 27017);
     }
 }

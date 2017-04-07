@@ -12,7 +12,7 @@ import org.apache.camel.builder.RouteBuilder;
  *
  * @author roberto
  */
-public class Route extends RouteBuilder{
+public class Route extends RouteBuilder {
     
     @Override
     public void configure() {
@@ -20,8 +20,28 @@ public class Route extends RouteBuilder{
             .post("histogramReport")
                 .produces(MediaType.APPLICATION_JSON)
                 .route()
-                .to("sql:select REQUEST_TIME from BI_AUDIT_API?dataSource=briefingiqDataSource")
-                .log("${body}")
-                .transform().body();
+                .multicast()
+                .aggregationStrategy(new Aggregator())
+                .to("direct:briefinqIqQuery", "direct:mongoClient", "direct:restService");
+        
+        from("direct:restService")
+            .log("Getting sql data")
+            .process(new RequestProcessor())
+            .to("direct:constructReport");
+        
+        from("direct:briefinqIqQuery")
+            .log("Getting sql data")
+            .to("sql:select REQUEST_TIME from BI_AUDIT_API?dataSource=briefingiqDataSource")
+            .process(new BriefiniqProcessor())
+            .to("direct:constructReport");
+        
+        from("direct:mongoClient")
+            .log("Getting mongo data")
+            .to("mongodb:mongoClient?database=flatData&collection=inventory&operation=findAll")
+            .process(new MongoDBProcessor())
+            .to("direct:constructReport");
+                
+        from("direct:constructReport")
+            .transform().body();
     }
 }
